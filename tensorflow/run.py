@@ -92,6 +92,8 @@ def parse_args():
                                help='the dir with preprocessed baidu reading comprehension data')
     path_settings.add_argument('--vocab_dir', default='../data/vocab/',
                                help='the dir to save vocabulary')
+    path_settings.add_argument('--vocab_file', default='vocab.data',
+                               help='the name of vocabulary file')
     path_settings.add_argument('--model_dir', default='../data/models/',
                                help='the dir to store models')
     path_settings.add_argument('--result_dir', default='../data/results/',
@@ -133,7 +135,7 @@ def prepare(args):
     vocab.randomly_init_embeddings(args.embed_size)
 
     logger.info('Saving vocab...')
-    with open(os.path.join(args.vocab_dir, 'vocab.data'), 'wb') as fout:
+    with open(os.path.join(args.vocab_dir, args.vocab_file), 'wb') as fout:
         pickle.dump(vocab, fout)
 
     logger.info('Done with preparing!')
@@ -145,7 +147,7 @@ def train(args):
     """
     logger = logging.getLogger("brc")
     logger.info('Load data_set and vocab...')
-    with open(os.path.join(args.vocab_dir, 'vocab.data'), 'rb') as fin:
+    with open(os.path.join(args.vocab_dir, args.vocab_file), 'rb') as fin:
         vocab = pickle.load(fin)
     brc_data = BRCDataset(args.max_p_num, args.max_p_len, args.max_q_len,
                           args.train_files, args.dev_files)
@@ -166,7 +168,7 @@ def evaluate(args):
     """
     logger = logging.getLogger("brc")
     logger.info('Load data_set and vocab...')
-    with open(os.path.join(args.vocab_dir, 'vocab.data'), 'rb') as fin:
+    with open(os.path.join(args.vocab_dir, args.vocab_file), 'rb') as fin:
         vocab = pickle.load(fin)
     assert len(args.dev_files) > 0, 'No dev files are provided.'
     brc_data = BRCDataset(args.max_p_num, args.max_p_len, args.max_q_len, dev_files=args.dev_files)
@@ -191,7 +193,7 @@ def predict(args):
     """
     logger = logging.getLogger("brc")
     logger.info('Load data_set and vocab...')
-    with open(os.path.join(args.vocab_dir, 'vocab.data'), 'rb') as fin:
+    with open(os.path.join(args.vocab_dir, args.vocab_file), 'rb') as fin:
         vocab = pickle.load(fin)
     assert len(args.test_files) > 0, 'No test files are provided.'
     brc_data = BRCDataset(args.max_p_num, args.max_p_len, args.max_q_len,
